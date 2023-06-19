@@ -1,13 +1,13 @@
 #include <iostream>
-
 #include "Renderer.h"
+
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_opengl.h>
 
 
 const float ASPECT = 16.f / 9.f;
 const int WinHeight = 480;
-const int WinWidth = WinHeight * ASPECT;
+const int WinWidth = (int)(WinHeight * ASPECT);
 
 SDL_Window* window = NULL;
 uint32_t window_flags = SDL_WINDOW_OPENGL;
@@ -32,10 +32,9 @@ int main(int argc, char** argv)
 		std::cout << "failed to create context\n" << SDL_GetError() << std::endl;
 		return -1;
 	}
-	GLenum err = glewInit();
-	if (err != GLEW_OK)
+	if (!gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress))
 	{
-		std::cout << "failed to load glew\n" << glewGetErrorString(err) << std::endl;
+		std::cout << "Failed to initialize GLAD\n" << std::endl;
 		return -1;
 	}
 

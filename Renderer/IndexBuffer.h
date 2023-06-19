@@ -8,7 +8,7 @@ private:
 
 public:
     IndexBuffer(const unsigned int* data,const unsigned int &count);
-    IndexBuffer() {}
+    IndexBuffer() :m_RendererId(0), m_Count(0) {}
     ~IndexBuffer();
 
     void CreateBuffer(const unsigned int* data, const unsigned int& count);

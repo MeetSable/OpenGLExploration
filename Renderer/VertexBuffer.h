@@ -7,7 +7,7 @@ private:
 
 public:
     VertexBuffer(const void* data, unsigned int size);
-    VertexBuffer() {}
+    VertexBuffer() :m_RendererId(0) {}
     ~VertexBuffer();
 
     void CreateBuffer(const void* data, unsigned int size);
