@@ -5,6 +5,7 @@
 #include "SDL3/SDL_opengl.h"
 
 #include "Cubes.h"
+#include "Camera.h"
 
 class App {
 private:
@@ -13,8 +14,10 @@ private:
 	SDL_GLContext m_context;
 	bool m_isRunning;
 	const uint8_t *m_keyState;
+	float mouse_x, mouse_y;
 
-	Cubes *cubes;
+	Cubes* cubes;
+	Camera* camera;
 public:
 	App(int w, int h);
 	~App();

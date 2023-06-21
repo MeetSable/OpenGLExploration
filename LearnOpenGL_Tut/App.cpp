@@ -29,12 +29,20 @@ App::App(int w, int h)
 	}
 	GLCall(glEnable(GL_DEPTH_TEST));
 
+	mouse_x = m_width / 2.f, mouse_y = m_height / 2.f;
+
 	cubes = new Cubes();
+	camera = new Camera(
+		glm::vec3(0.f, 0.f, 3.f),
+		glm::vec3(0.f, 0.f, -1.f),
+		glm::vec3(0.f, 1.f, 0.f),
+		m_width, m_height);
 }
 
 App::~App()
 {
 	delete(cubes);
+	delete(camera);
 	SDL_GL_DeleteContext(m_context);
 	SDL_DestroyWindow(m_window);
 	SDL_Quit();
@@ -58,6 +66,11 @@ void App::ProcessEvent()
 	{
 		if (event.type == SDL_EVENT_QUIT)
 			m_isRunning = false;
+
+		if (event.type == SDL_EVENT_MOUSE_WHEEL)
+		{
+			camera->ProcessMouseWheelEvent(event.wheel.x, event.wheel.y);
+		}
 	}
 }
 
@@ -66,6 +79,9 @@ void App::ProcessInput()
 	m_keyState = SDL_GetKeyboardState(NULL);
 	if (m_keyState[SDL_SCANCODE_ESCAPE])
 		m_isRunning = false;
+	SDL_GetMouseState(&mouse_x, &mouse_y);
+
+	camera->ProcessInputs(m_keyState, mouse_x, mouse_y);
 }
 
 void App::Update()
@@ -77,13 +93,8 @@ void App::Draw()
 	glViewport(0, 0, m_width, m_height);
 	glClearColor(0.2f, 0.3f, 0.3f, 1.f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	glm::mat4 view = glm::mat4(1.f);
-	view = glm::translate(view, glm::vec3(0.f, 0.f, -3.f));
-	glm::mat4 projection = glm::mat4(1.f);
-	projection = glm::perspective(glm::radians(45.f), (float)m_width / (float)m_height, 0.1f, 100.f);
-
-	cubes->Draw(view, projection);
-
+	{
+		cubes->Draw(camera->GetViewMatrix(), camera->GetProjectionMatrix());
+	}
 	SDL_GL_SwapWindow(m_window);
 }

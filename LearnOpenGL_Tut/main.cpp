@@ -2,7 +2,7 @@
 
 int main(int argc, char** argv)
 {
-	App app(640, 480);
+	App app(1280, 720);
 	app.Run();
 	return 0;
 }
