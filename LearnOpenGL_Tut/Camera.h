@@ -27,6 +27,8 @@ public:
 		firstMouse(true) {
 		m_pitch = glm::degrees(-asin(m_front.y));
 		m_yaw = glm::degrees(atan2(m_front.z, m_front.x));
+		last_x = 0;
+		last_y = 0;
 		}
 	~Camera() {}
 

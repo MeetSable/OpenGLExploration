@@ -15,7 +15,21 @@ Shader::Shader(const std::string& shaderPath)
 {
 	ShaderProgramSource source = ParseShader(shaderPath);
 	m_RendererID = CreateShader(source.VertexSource, source.FragmentSource);
+}
 
+Shader::Shader(const std::string& vertexPath, const std::string& fragmentPath)
+{
+	std::fstream verFStream(vertexPath);
+	std::stringstream verSStream;
+	verSStream << verFStream.rdbuf();
+	std::string vertexSource = verSStream.str();
+
+	std::fstream fragFStream(fragmentPath);
+	std::stringstream fragSStream;
+	fragSStream << fragFStream.rdbuf();
+	std::string fragmentSource = fragSStream.str();
+
+	m_RendererID = CreateShader(vertexSource, fragmentSource);
 }
 
 Shader::~Shader()
@@ -51,6 +65,11 @@ void Shader::SetUniform1f(const std::string& name, float val)
 void Shader::SetUniform2f(const std::string& name, glm::vec2 val)
 {
 	GLCall(glUniform2f(GetUniformLocation(name), val.x, val.y));
+}
+
+void Shader::SetUniform3f(const std::string& name, glm::vec3 val)
+{
+	GLCall(glUniform3f(GetUniformLocation(name), val.r, val.g, val.b));
 }
 
 int Shader::GetUniformLocation(const std::string& name)

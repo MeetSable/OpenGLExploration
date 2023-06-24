@@ -1,10 +1,12 @@
 #pragma once
 
-#include "Renderer.h"
-#include "SDL3/SDL.h"
-#include "SDL3/SDL_opengl.h"
+#include <Renderer.h>
+#include <Shader.h>
 
-#include "Cubes.h"
+#include <SDL3/SDL.h>
+#include <SDL3/SDL_opengl.h>
+
+
 #include "Camera.h"
 
 class App {
@@ -16,8 +18,10 @@ private:
 	const uint8_t *m_keyState;
 	float mouse_x, mouse_y;
 
-	Cubes* cubes;
 	Camera* camera;
+	VertexArray *cube_va;
+	Shader* lampShader, *cubeShader;
+	
 public:
 	App(int w, int h);
 	~App();

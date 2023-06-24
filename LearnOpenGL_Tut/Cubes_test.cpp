@@ -1,4 +1,4 @@
-#include "Cubes.h"
+#include "Cubes_test.h"
 
 #include "Texture.h"
 #include "VertexBufferLayout.h"
@@ -53,7 +53,7 @@ Cubes::Cubes()
 	};
 
 	m_tex = new Texture("res/img.jpg");
-	m_shader = new Shader("res/img.shader");
+	m_shader = new Shader("res/img_vs.glsl", "res/img_fs.glsl");
 	m_va = new VertexArray();
 	VertexBuffer vb(vertices, sizeof(vertices));
 	VertexBufferLayout layout;

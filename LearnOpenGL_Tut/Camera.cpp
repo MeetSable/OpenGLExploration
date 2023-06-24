@@ -64,7 +64,6 @@ void Camera::ProcessInputs(const uint8_t* keyState, const float& mouse_x, const 
 		direction.z = sin(glm::radians(m_yaw)) * cos(glm::radians(m_pitch));
 		m_front = glm::normalize(direction);
 	}
-
 	last_x = mouse_x;
 	last_y = mouse_y;
 }

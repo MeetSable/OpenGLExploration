@@ -1,8 +1,12 @@
 #include "App.h"
-#include "Renderer.h"
+#include <Renderer.h>
+
+#include <VertexBuffer.h>
+#include <VertexBufferLayout.h>
 
 #include <glm\glm.hpp>
 #include <glm\gtc\matrix_transform.hpp>
+
 
 App::App(int w, int h)
 	: m_width(w), m_height(h), m_isRunning(true), m_keyState(nullptr)
@@ -31,17 +35,88 @@ App::App(int w, int h)
 
 	mouse_x = m_width / 2.f, mouse_y = m_height / 2.f;
 
-	cubes = new Cubes();
 	camera = new Camera(
 		glm::vec3(0.f, 0.f, 3.f),
 		glm::vec3(0.f, 0.f, -1.f),
 		glm::vec3(0.f, 1.f, 0.f),
 		m_width, m_height);
+
+	float vertices[] = {
+	-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+	 0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+	 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+	 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+	-0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+	-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+
+	-0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+	 0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+	 0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+	 0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+	-0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+	-0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+
+	-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+	-0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+	-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+	-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+	-0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+	-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+
+	 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+	 0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+	 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+	 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+	 0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+	 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+
+	-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+	 0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+	 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+	 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+	-0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+	-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+
+	-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+	 0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+	 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+	 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+	-0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+	-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
+	};
+
+	VertexBuffer vb(vertices, sizeof(vertices));
+	VertexBufferLayout layout;
+	layout.Push<float>(3);
+	layout.Push<float>(3);
+	cube_va = new VertexArray();
+	cube_va->AddBuffer(vb, layout);
+	cube_va->Unbind();
+	lampShader = new Shader("res/base_vs.glsl", "res/lamp_fs.glsl");
+	cubeShader = new Shader("res/base_vs.glsl", "res/light_fs.glsl");
+
+	
+	glm::mat4 model = glm::translate(glm::mat4(1.f), glm::vec3(.2f));
+
+	cubeShader->Bind();
+	cubeShader->SetUniform3f("objectColor", glm::vec3(1.0f, 0.5f, 0.31f));
+	cubeShader->SetUniform3f("lightColor", glm::vec3(1.f, 1.f, 1.f));
+	cubeShader->SetUniform3f("lightPos", glm::vec3(1.2f, 1.0f, 2.0f));
+	cubeShader->SetUniform4mat("model", model);
+	cubeShader->Unbind();
+
+	model = glm::translate(glm::mat4(1.f), glm::vec3(1.2f, 1.0f, 2.0f));
+	lampShader->Bind();
+	lampShader->SetUniform4mat("model", model);
+	lampShader->Unbind();
+
 }
 
 App::~App()
 {
-	delete(cubes);
+	delete(cube_va);
+	delete(lampShader);
+	delete(cubeShader);
 	delete(camera);
 	SDL_GL_DeleteContext(m_context);
 	SDL_DestroyWindow(m_window);
@@ -91,10 +166,21 @@ void App::Update()
 void App::Draw()
 {
 	glViewport(0, 0, m_width, m_height);
-	glClearColor(0.2f, 0.3f, 0.3f, 1.f);
+	glClearColor(0.f, 0.f, 0.f, 1.f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	{
-		cubes->Draw(camera->GetViewMatrix(), camera->GetProjectionMatrix());
+		cube_va->Bind();
+		cubeShader->Bind();
+		cubeShader->SetUniform4mat("projection", camera->GetProjectionMatrix());
+		cubeShader->SetUniform4mat("view", camera->GetViewMatrix());
+		GLCall(glDrawArrays(GL_TRIANGLES, 0, 36));
+		cubeShader->Unbind();
+
+		lampShader->Bind();
+		lampShader->SetUniform4mat("projection", camera->GetProjectionMatrix());
+		lampShader->SetUniform4mat("view", camera->GetViewMatrix());
+		GLCall(glDrawArrays(GL_TRIANGLES, 0, 36));
+		lampShader->Unbind();
 	}
 	SDL_GL_SwapWindow(m_window);
 }
