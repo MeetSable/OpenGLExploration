@@ -2,6 +2,7 @@
 #include <cmath>
 
 #include <SDL3/SDL.h>
+#include <iostream>
 
 void Camera::ProcessMouseWheelEvent(const float& x, const float& y)
 {
@@ -63,7 +64,9 @@ void Camera::ProcessInputs(const uint8_t* keyState, const float& mouse_x, const 
 		direction.y = sin(glm::radians(m_pitch));
 		direction.z = sin(glm::radians(m_yaw)) * cos(glm::radians(m_pitch));
 		m_front = glm::normalize(direction);
+		// std::cout << "\r(" << m_position.x << ", " << m_position.y << ", " << m_position.z << ")  (" << m_yaw << ", " << m_pitch << ")";
 	}
+
 	last_x = mouse_x;
 	last_y = mouse_y;
 }

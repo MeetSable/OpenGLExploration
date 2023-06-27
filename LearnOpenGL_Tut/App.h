@@ -20,6 +20,7 @@ private:
 
 	Camera* camera;
 	VertexArray *cube_va;
+	glm::mat4 lightModel;
 	Shader* lampShader, *cubeShader;
 	
 public:

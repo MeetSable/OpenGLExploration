@@ -100,7 +100,7 @@ unsigned int Shader::CompileShader(unsigned int type, const std::string& source)
 		glGetShaderiv(id, GL_INFO_LOG_LENGTH, &length);
 		char *message = (char*)malloc(length*sizeof(char));
 		glGetShaderInfoLog(id, length, &length, message);
-		std::cout << "Failed to compile shader:" << message << std::endl;
+		std::cout << ((type==GL_FRAGMENT_SHADER) ? "FRAGMENT SHADER::" : "VERTEX SHADER::") << "Failed to compile..\n" << message << std::endl;
 	}
 	return id;
 }

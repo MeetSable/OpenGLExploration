@@ -25,10 +25,17 @@ public:
 		: m_position(pos), m_front(front), m_up(up), m_speed(0.01f), 
 		m_sensitivity(0.05f), m_width(w), m_height(h), m_fov(45.f),
 		firstMouse(true) {
-		m_pitch = glm::degrees(-asin(m_front.y));
-		m_yaw = glm::degrees(atan2(m_front.z, m_front.x));
+		m_yaw = -313.102f;
+		m_pitch = -13;
 		last_x = 0;
 		last_y = 0;
+
+		
+		glm::vec3 direction;
+		direction.x = cos(glm::radians(m_yaw)) * cos(glm::radians(m_pitch));
+		direction.y = sin(glm::radians(m_pitch));
+		direction.z = sin(glm::radians(m_yaw)) * cos(glm::radians(m_pitch));
+		m_front = glm::normalize(direction);
 		}
 	~Camera() {}
 
@@ -40,6 +47,11 @@ public:
 	inline glm::mat4 GetProjectionMatrix()
 	{
 		return glm::perspective(glm::radians(m_fov), (float)m_width / (float)m_height, 0.1f, 100.f);
+	}
+
+	inline glm::vec3 GetCameraPos()
+	{
+		return m_position;
 	}
 
 	void ProcessMouseWheelEvent(const float& x, const float& y);
