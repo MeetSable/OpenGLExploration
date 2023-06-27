@@ -18,7 +18,6 @@ struct Light{
 uniform Material material;
 uniform Light light;
 
-uniform vec3 lightPos;
 uniform vec3 viewPos;
 
 in vec3 Normal;
@@ -38,8 +37,8 @@ vec3 PhongShader()
 	
 	// diffuse
 	vec3 norm = normalize(Normal);
-	vec3 lightDir = normalize(lightPos - FragPos);
-	float diff = max(dot(norm, lightPos), 0.0);
+	vec3 lightDir = normalize(light.position - FragPos);
+	float diff = max(dot(norm, light.position), 0.0);
 	vec3 diffuse = light.diffuse * (diff * material.diffuse);
     
     // specular

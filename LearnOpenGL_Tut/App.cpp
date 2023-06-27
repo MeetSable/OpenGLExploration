@@ -109,17 +109,8 @@ App::App(int w, int h)
 	
 	glm::mat4 model = glm::mat4(1.f);
 	cubeShader->Bind();
-	cubeShader->SetUniform3f("lightPos", glm::vec3(lightModel[3]));
-	cubeShader->SetUniform3f("material.ambient", glm::vec3(1.0f, 0.5f, 0.31f));
-	cubeShader->SetUniform3f("material.diffuse", glm::vec3(1.0f, 0.5f, 0.31f));
-	cubeShader->SetUniform3f("material.specular", glm::vec3(0.5f, 0.5f, 0.5f));
-	cubeShader->SetUniform1f("material.shininess", 32.0f);
-	cubeShader->SetUniform3f("light.ambient", glm::vec3(0.2f, 0.2f, 0.2f));
-	cubeShader->SetUniform3f("light.diffuse", glm::vec3(0.5f, 0.5f, 0.5f));
-	cubeShader->SetUniform3f("light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
 	cubeShader->SetUniform4mat("model", model);
 	cubeShader->Unbind();
-
 }
 
 App::~App()
@@ -181,6 +172,7 @@ void App::Update()
 	lightModel = glm::rotate(glm::mat4(1.0f), (float)SDL_GetTicks()/1000.f, glm::vec3(0.3f, 1.0f, 0.0f));
 	lightModel = glm::translate(lightModel, glm::vec3(1.2f, 1.0f, 2.0f));
 	lightModel = glm::scale(lightModel, glm::vec3(0.2f));
+
 }
 
 void App::Draw()
@@ -191,10 +183,20 @@ void App::Draw()
 	{
 		cube_va->Bind();
 		cubeShader->Bind();
+		// coords
 		cubeShader->SetUniform4mat("projection", camera->GetProjectionMatrix());
 		cubeShader->SetUniform4mat("view", camera->GetViewMatrix());
 		cubeShader->SetUniform3f("viewPos", camera->GetCameraPos());
-		cubeShader->SetUniform3f("lightPos", glm::vec3(lightModel[3]));
+		// lamp properties
+		cubeShader->SetUniform3f("light.position", lamp.position);
+		cubeShader->SetUniform3f("light.ambient", lamp.ambient);
+		cubeShader->SetUniform3f("light.diffuse", lamp.diffuse);
+		cubeShader->SetUniform3f("light.specular", lamp.specular);
+		// cube material
+		cubeShader->SetUniform3f("material.ambient", cubeMaterial.ambient);
+		cubeShader->SetUniform3f("material.diffuse", cubeMaterial.diffuse);
+		cubeShader->SetUniform3f("material.specular", cubeMaterial.specular);
+		cubeShader->SetUniform1f("material.shininess", cubeMaterial.shininess);
 		GLCall(glDrawArrays(GL_TRIANGLES, 0, 36));
 		cubeShader->Unbind();
 
@@ -209,13 +211,26 @@ void App::Draw()
 	// start the Dear ImGui frame
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplSDL3_NewFrame();
-	ImGui::NewFrame();
 	{
-		bool t = true;
-		ImGui::ShowDemoWindow(&t);
+		ImGui::NewFrame();
+		ImGui::Begin("Editor");
+		if (ImGui::CollapsingHeader("Lamp Material"))
+		{
+			ImGui::InputFloat3("Ambient", &lamp.ambient[0], "%.3f");
+			ImGui::InputFloat3("Diffuse", &lamp.diffuse[0], "%.3f");
+			ImGui::InputFloat3("Specular", &lamp.specular[0], "%.3f");
+		}
+		if (ImGui::CollapsingHeader("Cube Material"))
+		{
+			ImGui::InputFloat3("Ambient", &cubeMaterial.ambient[0], "%.3f");
+			ImGui::InputFloat3("Diffuse", &cubeMaterial.diffuse[0], "%.3f");
+			ImGui::InputFloat3("Specular", &cubeMaterial.specular[0], "%.3f");
+			ImGui::InputFloat("Shininess", &cubeMaterial.shininess);
+		}
+		
+		ImGui::End();
 	}
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-	
 	SDL_GL_SwapWindow(m_window);
 }

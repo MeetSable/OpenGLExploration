@@ -6,8 +6,27 @@
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_opengl.h>
 
-
 #include "Camera.h"
+
+#include "glm/glm.hpp"
+
+struct Material {
+	glm::vec3 ambient;
+	glm::vec3 diffuse;
+	glm::vec3 specular;
+	float shininess;
+
+	Material() :ambient(1.f), diffuse(1.f), specular(1.f), shininess(1.f) {}
+};
+
+struct Light {
+	glm::vec3 position;
+	glm::vec3 ambient;
+	glm::vec3 diffuse;
+	glm::vec3 specular;
+
+	Light(): position(1.f), ambient(1.f), diffuse(1.f), specular(1.f) {}
+};
 
 class App {
 private:
@@ -22,6 +41,8 @@ private:
 	VertexArray *cube_va;
 	glm::mat4 lightModel;
 	Shader* lampShader, *cubeShader;
+	Material cubeMaterial;
+	Light lamp;
 	
 public:
 	App(int w, int h);
