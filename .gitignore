@@ -363,3 +363,6 @@ MigrationBackup/
 FodyWeavers.xsd
 
 !**/glew-2.1.0/**
+
+# Rider config
+.idea/
