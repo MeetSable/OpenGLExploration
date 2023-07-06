@@ -43,6 +43,9 @@ private:
 	Shader* lampShader, *cubeShader;
 	Material cubeMaterial;
 	Light lamp;
+
+	float m_deltaTime;
+	uint64_t m_lastFrame;
 	
 public:
 	App(int w, int h);

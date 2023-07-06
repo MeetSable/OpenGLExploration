@@ -111,6 +111,8 @@ App::App(int w, int h)
 	cubeShader->Bind();
 	cubeShader->SetUniform4mat("model", model);
 	cubeShader->Unbind();
+
+	m_lastFrame = SDL_GetTicks();
 }
 
 App::~App()
@@ -169,6 +171,8 @@ void App::ProcessInput()
 
 void App::Update()
 {
+	m_deltaTime = static_cast<float>(SDL_GetTicks() - m_lastFrame) * 1000.f;
+	
 	lightModel = glm::rotate(glm::mat4(1.0f), (float)SDL_GetTicks()/1000.f, glm::vec3(0.3f, 1.0f, 0.0f));
 	lightModel = glm::translate(lightModel, glm::vec3(1.2f, 1.0f, 2.0f));
 	lightModel = glm::scale(lightModel, glm::vec3(0.2f));
@@ -213,6 +217,10 @@ void App::Draw()
 	ImGui_ImplSDL3_NewFrame();
 	{
 		ImGui::NewFrame();
+		ImGui::Begin("Performace", 0, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoMove);
+		ImGui::Value("FPS", ImGui::GetIO().Framerate);
+		ImGui::End();
+		
 		ImGui::Begin("Editor");
 		if (ImGui::CollapsingHeader("Lamp Material"))
 		{
@@ -222,13 +230,13 @@ void App::Draw()
 		}
 		if (ImGui::CollapsingHeader("Cube Material"))
 		{
-			ImGui::InputFloat3("Ambient", &cubeMaterial.ambient[0], "%.3f");
+			ImGui::ColorEdit3("Ambient",&cubeMaterial.ambient[0] );
 			ImGui::InputFloat3("Diffuse", &cubeMaterial.diffuse[0], "%.3f");
 			ImGui::InputFloat3("Specular", &cubeMaterial.specular[0], "%.3f");
 			ImGui::InputFloat("Shininess", &cubeMaterial.shininess);
 		}
-		
 		ImGui::End();
+		
 	}
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
