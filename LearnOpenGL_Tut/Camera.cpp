@@ -40,13 +40,13 @@ void Camera::ProcessInputs(const uint8_t* keyState, const float& mouse_x, const 
 	}
 	if (keyState[SDL_SCANCODE_Q])
 	{
-		m_position += m_up * m_speed;
+		m_position -= m_up * m_speed;
 	}
 	if (keyState[SDL_SCANCODE_E])
 	{
-		m_position -= m_up * m_speed;
+		m_position += m_up * m_speed;
 	}
-	if (keyState[SDL_SCANCODE_LCTRL])
+	if (isRightButtonPressed)
 	{
 		float offset_x = (last_x - mouse_x) * m_sensitivity;
 		float offset_y = (mouse_y - last_y) * m_sensitivity;
@@ -65,6 +65,7 @@ void Camera::ProcessInputs(const uint8_t* keyState, const float& mouse_x, const 
 		direction.z = sin(glm::radians(m_yaw)) * cos(glm::radians(m_pitch));
 		m_front = glm::normalize(direction);
 		// std::cout << "\r(" << m_position.x << ", " << m_position.y << ", " << m_position.z << ")  (" << m_yaw << ", " << m_pitch << ")";
+		isRightButtonPressed = false;
 	}
 
 	last_x = mouse_x;

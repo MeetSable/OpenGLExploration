@@ -2,6 +2,7 @@
 
 #include <Renderer.h>
 #include <Shader.h>
+#include <Texture.h>
 
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_opengl.h>
@@ -40,7 +41,8 @@ private:
 	Camera* camera;
 	VertexArray *cube_va;
 	glm::mat4 lightModel;
-	Shader* lampShader, *cubeShader;
+	Shader *lampShader, *cubeShader;
+	Texture *diffuseMap, *specularMap, *emissionMap;
 	Material cubeMaterial;
 	Light lamp;
 

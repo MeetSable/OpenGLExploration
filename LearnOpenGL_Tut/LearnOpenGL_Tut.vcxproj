@@ -162,9 +162,13 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="res\base_vs.glsl" />
+    <Content Include="res\container2.png" />
+    <Content Include="res\container2_specular.png" />
     <Content Include="res\img_fs.glsl" />
     <Content Include="res\img_vs.glsl" />
     <Content Include="res\lamp_fs.glsl" />
+    <Content Include="res\lighting_maps_specular_color.png" />
+    <Content Include="res\matrix.jpg" />
     <Content Include="res\phong_lighting_fs.glsl" />
   </ItemGroup>
   <ItemGroup>

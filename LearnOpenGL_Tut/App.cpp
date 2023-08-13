@@ -11,7 +11,6 @@
 #include <glm\glm.hpp>
 #include <glm\gtc\matrix_transform.hpp>
 
-
 App::App(int w, int h)
 	: m_width(w), m_height(h), m_isRunning(true), m_keyState(nullptr), lightModel(glm::mat4(1.f))
 {
@@ -54,69 +53,85 @@ App::App(int w, int h)
 		m_width, m_height);
 
 	float vertices[] = {
-		-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-		 0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-		 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-		 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-		-0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-		-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+	    // positions          // normals           // texture coords
+	    -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 0.0f,
+	     0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f, 0.0f,
+	     0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f, 1.0f,
+	     0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f, 1.0f,
+	    -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 1.0f,
+	    -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 0.0f,
 
-		-0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-		 0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-		 0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-		 0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-		-0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-		-0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+	    -0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   0.0f, 0.0f,
+	     0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   1.0f, 0.0f,
+	     0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   1.0f, 1.0f,
+	     0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   1.0f, 1.0f,
+	    -0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   0.0f, 1.0f,
+	    -0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   0.0f, 0.0f,
 
-		-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-		-0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-		-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-		-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-		-0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-		-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+	    -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
+	    -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  1.0f, 1.0f,
+	    -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
+	    -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
+	    -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 0.0f,
+	    -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
 
-		 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-		 0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-		 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-		 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-		 0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-		 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+	     0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
+	     0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f,
+	     0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
+	     0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
+	     0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  0.0f, 0.0f,
+	     0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
 
-		-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-		 0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-		 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-		 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-		-0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-		-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+	    -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f, 1.0f,
+	     0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 1.0f,
+	     0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 0.0f,
+	     0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 0.0f,
+	    -0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  0.0f, 0.0f,
+	    -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f, 1.0f,
 
-		-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
-		 0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
-		 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-		 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-		-0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-		-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
+	    -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 1.0f,
+	     0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  1.0f, 1.0f,
+	     0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f, 0.0f,
+	     0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f, 0.0f,
+	    -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 0.0f,
+	    -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 1.0f
 	};
 
 	VertexBuffer vb(vertices, sizeof(vertices));
 	VertexBufferLayout layout;
 	layout.Push<float>(3);
 	layout.Push<float>(3);
+	layout.Push<float>(2);
 	cube_va = new VertexArray();
 	cube_va->AddBuffer(vb, layout);
 	cube_va->Unbind();
 	lampShader = new Shader("res/base_vs.glsl", "res/lamp_fs.glsl");
 	cubeShader = new Shader("res/base_vs.glsl", "res/phong_lighting_fs.glsl");
+	diffuseMap = new Texture("res/container2.png");
+	diffuseMap->Unbind();
+	// specularMap = new Texture("res/container2_specular.png");
+	specularMap = new Texture("res/lighting_maps_specular_color.png");
+	specularMap->Unbind();
+	emissionMap = new Texture("res/matrix.jpg");
+	emissionMap->Unbind();
 	
-	glm::mat4 model = glm::mat4(1.f);
 	cubeShader->Bind();
-	cubeShader->SetUniform4mat("model", model);
+	cubeShader->SetUniform1i("material.diffuse", 0);
+	cubeShader->SetUniform1i("material.specular", 1);
+	cubeShader->SetUniform1i("material.emission", 2);
 	cubeShader->Unbind();
 
 	m_lastFrame = SDL_GetTicks();
+	lamp.position = {1.2f, 1.f, 2.f};
+	lightModel = glm::translate(glm::mat4(1.f), lamp.position);
+	lightModel = glm::scale(lightModel, {.3f, .3f, .3f});
 }
 
 App::~App()
 {
+	delete(diffuseMap);
+	delete(specularMap);
+	delete(emissionMap);
 	delete(cube_va);
 	delete(lampShader);
 	delete(cubeShader);
@@ -150,9 +165,10 @@ void App::ProcessEvent()
 		ImGui_ImplSDL3_ProcessEvent(&event);
 		
 		if (event.type == SDL_EVENT_QUIT)
+		{
 			m_isRunning = false;
-
-		if (event.type == SDL_EVENT_MOUSE_WHEEL)
+		}
+		else if (event.type == SDL_EVENT_MOUSE_WHEEL)
 		{
 			camera->ProcessMouseWheelEvent(event.wheel.x, event.wheel.y);
 		}
@@ -164,20 +180,29 @@ void App::ProcessInput()
 	m_keyState = SDL_GetKeyboardState(NULL);
 	if (m_keyState[SDL_SCANCODE_ESCAPE])
 		m_isRunning = false;
-	SDL_GetMouseState(&mouse_x, &mouse_y);
-
+	if(SDL_GetMouseState(&mouse_x, &mouse_y) & SDL_BUTTON_RMASK)
+		camera->RightButtonPressed();
+	
 	camera->ProcessInputs(m_keyState, mouse_x, mouse_y);
 }
 
 void App::Update()
 {
 	m_deltaTime = static_cast<float>(SDL_GetTicks() - m_lastFrame) * 1000.f;
-	
-	lightModel = glm::rotate(glm::mat4(1.0f), (float)SDL_GetTicks()/1000.f, glm::vec3(0.3f, 1.0f, 0.0f));
-	lightModel = glm::translate(lightModel, glm::vec3(1.2f, 1.0f, 2.0f));
-	lightModel = glm::scale(lightModel, glm::vec3(0.2f));
-
 }
+
+static glm::vec3 cubePositions[] = {
+	glm::vec3(0.0f,  0.0f,  0.0f),
+	glm::vec3(2.0f,  5.0f, -15.0f),
+	glm::vec3(-1.5f, -2.2f, -2.5f),
+	glm::vec3(-3.8f, -2.0f, -12.3f),
+	glm::vec3(2.4f, -0.4f, -3.5f),
+	glm::vec3(-1.7f,  3.0f, -7.5f),
+	glm::vec3(1.3f, -2.0f, -2.5f),
+	glm::vec3(1.5f,  2.0f, -2.5f),
+	glm::vec3(1.5f,  0.2f, -1.5f),
+	glm::vec3(-1.3f,  1.0f, -1.5f)
+};
 
 void App::Draw()
 {
@@ -187,6 +212,9 @@ void App::Draw()
 	{
 		cube_va->Bind();
 		cubeShader->Bind();
+		diffuseMap->Bind(0);
+		specularMap->Bind(1);
+		emissionMap->Bind(2);
 		// coords
 		cubeShader->SetUniform4mat("projection", camera->GetProjectionMatrix());
 		cubeShader->SetUniform4mat("view", camera->GetViewMatrix());
@@ -197,11 +225,15 @@ void App::Draw()
 		cubeShader->SetUniform3f("light.diffuse", lamp.diffuse);
 		cubeShader->SetUniform3f("light.specular", lamp.specular);
 		// cube material
-		cubeShader->SetUniform3f("material.ambient", cubeMaterial.ambient);
-		cubeShader->SetUniform3f("material.diffuse", cubeMaterial.diffuse);
-		cubeShader->SetUniform3f("material.specular", cubeMaterial.specular);
 		cubeShader->SetUniform1f("material.shininess", cubeMaterial.shininess);
-		GLCall(glDrawArrays(GL_TRIANGLES, 0, 36));
+		for(auto& pos : cubePositions)
+		{
+			glm::mat4 model = glm::translate(glm::mat4(1.f), pos);
+			cubeShader->SetUniform4mat("model", model);
+			GLCall(glDrawArrays(GL_TRIANGLES, 0, 36));
+		}
+		specularMap->Unbind();
+		diffuseMap->Unbind();
 		cubeShader->Unbind();
 
 		lampShader->Bind();
@@ -224,16 +256,13 @@ void App::Draw()
 		ImGui::Begin("Editor");
 		if (ImGui::CollapsingHeader("Lamp Material"))
 		{
-			ImGui::InputFloat3("Ambient", &lamp.ambient[0], "%.3f");
+			ImGui::ColorEdit3("Ambient", &lamp.ambient[0]);
 			ImGui::InputFloat3("Diffuse", &lamp.diffuse[0], "%.3f");
 			ImGui::InputFloat3("Specular", &lamp.specular[0], "%.3f");
 		}
 		if (ImGui::CollapsingHeader("Cube Material"))
 		{
-			ImGui::ColorEdit3("Ambient",&cubeMaterial.ambient[0] );
-			ImGui::InputFloat3("Diffuse", &cubeMaterial.diffuse[0], "%.3f");
-			ImGui::InputFloat3("Specular", &cubeMaterial.specular[0], "%.3f");
-			ImGui::InputFloat("Shininess", &cubeMaterial.shininess);
+			ImGui::SliderFloat("Shininess", &cubeMaterial.shininess, 1.f, 128.f, "%.2f");
 		}
 		ImGui::End();
 		
