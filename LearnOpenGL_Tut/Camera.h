@@ -22,13 +22,11 @@ private:
 	bool firstMouse;
 
 public:
-	Camera(glm::vec3 pos, glm::vec3 front, glm::vec3 up, int w, int h)
-		: m_position(pos), m_front(front), m_up(up), m_speed(0.01f), 
+	Camera(glm::vec3 pos, float yaw, float pitch, glm::vec3 up, int w, int h)
+		: m_position(pos), m_up(up), m_speed(0.01f), m_yaw(yaw), m_pitch(pitch), 
 		m_sensitivity(0.05f), m_width(w), m_height(h), m_fov(45.f),
 		firstMouse(true), isRightButtonPressed(false)
 	{
-		m_yaw = -313.102f;
-		m_pitch = -13;
 		last_x = 0;
 		last_y = 0;
 
@@ -51,6 +49,10 @@ public:
 	inline glm::vec3 GetCameraPos()
 	{
 		return m_position;
+	}
+	inline glm::vec3 GetCameraFront()
+	{
+		return m_front;
 	}
 	void ProcessMouseWheelEvent(const float& x, const float& y);
 	void ProcessInputs(const uint8_t* keyState, const float& mouse_x, const float& mouse_y);

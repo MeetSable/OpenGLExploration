@@ -164,19 +164,21 @@
     <Content Include="res\base_vs.glsl" />
     <Content Include="res\container2.png" />
     <Content Include="res\container2_specular.png" />
+    <Content Include="res\direction_lighting_fs.glsl" />
     <Content Include="res\img_fs.glsl" />
     <Content Include="res\img_vs.glsl" />
     <Content Include="res\lamp_fs.glsl" />
     <Content Include="res\lighting_maps_specular_color.png" />
     <Content Include="res\matrix.jpg" />
-    <Content Include="res\phong_lighting_fs.glsl" />
+    <Content Include="res\multiple_lights.glsl" />
+    <Content Include="res\point_lighting_fs.glsl" />
+    <Content Include="res\spot_lighting_fs.glsl" />
   </ItemGroup>
   <ItemGroup>
     <None Include="res\base_vs.glsl" />
     <None Include="res\img_fs.glsl" />
     <None Include="res\img_vs.glsl" />
     <None Include="res\lamp_fs.glsl" />
-    <None Include="res\phong_lighting_fs.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\img.jpg" />

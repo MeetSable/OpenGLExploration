@@ -20,14 +20,30 @@ struct Material {
 	Material() :ambient(1.f), diffuse(1.f), specular(1.f), shininess(1.f) {}
 };
 
-struct Light {
+struct PointLight
+{
 	glm::vec3 position;
+    
 	glm::vec3 ambient;
 	glm::vec3 diffuse;
 	glm::vec3 specular;
+    
+	float constant;
+	float linear;
+	float quadratic;
 
-	Light(): position(1.f), ambient(1.f), diffuse(1.f), specular(1.f) {}
+	PointLight():ambient(.05f), diffuse(.8f), specular(1.f){}
 };
+
+struct DirLight
+{
+	glm::vec3 direction;
+	glm::vec3 ambient;
+	glm::vec3 diffuse;
+	glm::vec3 specular;
+};
+
+#define NR_POINT_LIGHTS 4
 
 class App {
 private:
@@ -40,11 +56,14 @@ private:
 
 	Camera* camera;
 	VertexArray *cube_va;
-	glm::mat4 lightModel;
 	Shader *lampShader, *cubeShader;
 	Texture *diffuseMap, *specularMap, *emissionMap;
 	Material cubeMaterial;
-	Light lamp;
+	DirLight dirLight;
+	std::vector<PointLight> pointLights;
+	PointLight spotLight;
+
+	glm::vec3 m_clearColor;
 
 	float m_deltaTime;
 	uint64_t m_lastFrame;

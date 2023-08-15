@@ -11,8 +11,28 @@
 #include <glm\glm.hpp>
 #include <glm\gtc\matrix_transform.hpp>
 
+static glm::vec3 cubePositions[] = {
+	glm::vec3(0.0f,  0.0f,  0.0f),
+	glm::vec3(2.0f,  5.0f, -15.0f),
+	glm::vec3(-1.5f, -2.2f, -2.5f),
+	glm::vec3(-3.8f, -2.0f, -12.3f),
+	glm::vec3(2.4f, -0.4f, -3.5f),
+	glm::vec3(-1.7f,  3.0f, -7.5f),
+	glm::vec3(1.3f, -2.0f, -2.5f),
+	glm::vec3(1.5f,  2.0f, -2.5f),
+	glm::vec3(1.5f,  0.2f, -1.5f),
+	glm::vec3(-1.3f,  1.0f, -1.5f)
+};
+
+glm::vec3 pointLightPositions[] = {
+	glm::vec3( 0.7f,  0.2f,  2.0f),
+	glm::vec3( 2.3f, -3.3f, -4.0f),
+	glm::vec3(-4.0f,  2.0f, -12.0f),
+	glm::vec3( 0.0f,  0.0f, -3.0f)
+};  
+
 App::App(int w, int h)
-	: m_width(w), m_height(h), m_isRunning(true), m_keyState(nullptr), lightModel(glm::mat4(1.f))
+	: m_width(w), m_height(h), m_isRunning(true), m_keyState(nullptr), m_clearColor(0.f), pointLights(NR_POINT_LIGHTS)
 {
 	m_window = SDL_CreateWindow("Learning OpenGL...", m_width, m_height, SDL_WINDOW_OPENGL);
 	if (!m_window)
@@ -47,8 +67,8 @@ App::App(int w, int h)
 	mouse_x = m_width / 2.f, mouse_y = m_height / 2.f;
 
 	camera = new Camera(
-		glm::vec3(-2.4594, 1.30184, -2.52244),
-		glm::vec3(0.f, 0.f, -1.f),
+		glm::vec3(0.f, 0.f, 7.5f),
+		-90, 0,
 		glm::vec3(0.f, 1.f, 0.f),
 		m_width, m_height);
 
@@ -106,7 +126,7 @@ App::App(int w, int h)
 	cube_va->AddBuffer(vb, layout);
 	cube_va->Unbind();
 	lampShader = new Shader("res/base_vs.glsl", "res/lamp_fs.glsl");
-	cubeShader = new Shader("res/base_vs.glsl", "res/phong_lighting_fs.glsl");
+	cubeShader = new Shader("res/base_vs.glsl", "res/multiple_lights.glsl");
 	diffuseMap = new Texture("res/container2.png");
 	diffuseMap->Unbind();
 	// specularMap = new Texture("res/container2_specular.png");
@@ -118,13 +138,18 @@ App::App(int w, int h)
 	cubeShader->Bind();
 	cubeShader->SetUniform1i("material.diffuse", 0);
 	cubeShader->SetUniform1i("material.specular", 1);
-	cubeShader->SetUniform1i("material.emission", 2);
+	// cubeShader->SetUniform1i("material.emission", 2);
 	cubeShader->Unbind();
 
+	for(int i = 0 ; i < NR_POINT_LIGHTS ; i++)
+	{
+		pointLights[i].position = pointLightPositions[i];
+		pointLights[i].constant = 1.f;
+		pointLights[i].linear = 0.09f;
+		pointLights[i].quadratic = 0.032f;
+	}
+
 	m_lastFrame = SDL_GetTicks();
-	lamp.position = {1.2f, 1.f, 2.f};
-	lightModel = glm::translate(glm::mat4(1.f), lamp.position);
-	lightModel = glm::scale(lightModel, {.3f, .3f, .3f});
 }
 
 App::~App()
@@ -191,23 +216,10 @@ void App::Update()
 	m_deltaTime = static_cast<float>(SDL_GetTicks() - m_lastFrame) * 1000.f;
 }
 
-static glm::vec3 cubePositions[] = {
-	glm::vec3(0.0f,  0.0f,  0.0f),
-	glm::vec3(2.0f,  5.0f, -15.0f),
-	glm::vec3(-1.5f, -2.2f, -2.5f),
-	glm::vec3(-3.8f, -2.0f, -12.3f),
-	glm::vec3(2.4f, -0.4f, -3.5f),
-	glm::vec3(-1.7f,  3.0f, -7.5f),
-	glm::vec3(1.3f, -2.0f, -2.5f),
-	glm::vec3(1.5f,  2.0f, -2.5f),
-	glm::vec3(1.5f,  0.2f, -1.5f),
-	glm::vec3(-1.3f,  1.0f, -1.5f)
-};
-
 void App::Draw()
 {
 	glViewport(0, 0, m_width, m_height);
-	glClearColor(0.f, 0.f, 0.f, 1.f);
+	glClearColor(m_clearColor.r, m_clearColor.g, m_clearColor.b, 1.f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	{
 		cube_va->Bind();
@@ -220,15 +232,29 @@ void App::Draw()
 		cubeShader->SetUniform4mat("view", camera->GetViewMatrix());
 		cubeShader->SetUniform3f("viewPos", camera->GetCameraPos());
 		// lamp properties
-		cubeShader->SetUniform3f("light.position", lamp.position);
-		cubeShader->SetUniform3f("light.ambient", lamp.ambient);
-		cubeShader->SetUniform3f("light.diffuse", lamp.diffuse);
-		cubeShader->SetUniform3f("light.specular", lamp.specular);
+		// cubeShader->SetUniform3f("light.position", lamp.position); // point light
+		// cubeShader->SetUniform3f("light.direction", glm::vec3(-.2f, -1.f, -.3f)); // directional light
+		for(int i = 0 ; i < NR_POINT_LIGHTS ; i++)
+		{
+			std::string l = "pointLights[" + std::to_string(i) + "].";
+			cubeShader->SetUniform3f(l + "position", pointLights[i].position);
+			cubeShader->SetUniform3f(l + "ambient", pointLights[i].ambient);
+			cubeShader->SetUniform3f(l + "diffuse", pointLights[i].diffuse);
+			cubeShader->SetUniform3f(l + "specular", pointLights[i].specular);
+			cubeShader->SetUniform1f(l + "constant", pointLights[i].constant);
+			cubeShader->SetUniform1f(l + "linear", pointLights[i].linear);
+			cubeShader->SetUniform1f(l + "quadratic", pointLights[i].quadratic);
+		}
+		// Spotlight -------
+		// cubeShader->SetUniform3f("light.position", camera->GetCameraPos());
+		// cubeShader->SetUniform3f("light.direction", camera->GetCameraFront());
+		// Spotlight -------
 		// cube material
 		cubeShader->SetUniform1f("material.shininess", cubeMaterial.shininess);
-		for(auto& pos : cubePositions)
+		for(int i = 0 ; i < 10 ; i++)
 		{
-			glm::mat4 model = glm::translate(glm::mat4(1.f), pos);
+			glm::mat4 model = glm::translate(glm::mat4(1.f), cubePositions[i]);
+			model = glm::rotate(model, glm::radians(i * 20.f), glm::vec3(1.f, .3f, .5f));
 			cubeShader->SetUniform4mat("model", model);
 			GLCall(glDrawArrays(GL_TRIANGLES, 0, 36));
 		}
@@ -236,11 +262,17 @@ void App::Draw()
 		diffuseMap->Unbind();
 		cubeShader->Unbind();
 
+		// lamp cube
 		lampShader->Bind();
 		lampShader->SetUniform4mat("projection", camera->GetProjectionMatrix());
 		lampShader->SetUniform4mat("view", camera->GetViewMatrix());
-		lampShader->SetUniform4mat("model", lightModel);
-		GLCall(glDrawArrays(GL_TRIANGLES, 0, 36));
+		for(int i = 0 ; i < NR_POINT_LIGHTS ; i++)
+		{
+			glm::mat4 model = glm::translate(glm::mat4(1.f), pointLightPositions[i]);
+			lampShader->SetUniform4mat("model", glm::scale(model, glm::vec3(.2f, .2f, .2f)));
+			lampShader->SetUniform3f("sourceColor", pointLights[i].ambient);
+			GLCall(glDrawArrays(GL_TRIANGLES, 0, 36));
+		}
 		lampShader->Unbind();
 	}
 
@@ -254,11 +286,13 @@ void App::Draw()
 		ImGui::End();
 		
 		ImGui::Begin("Editor");
-		if (ImGui::CollapsingHeader("Lamp Material"))
+		ImGui::ColorEdit3("Background Color", &m_clearColor[0]);
+		for(int i = 0 ; i < NR_POINT_LIGHTS ; i++)
 		{
-			ImGui::ColorEdit3("Ambient", &lamp.ambient[0]);
-			ImGui::InputFloat3("Diffuse", &lamp.diffuse[0], "%.3f");
-			ImGui::InputFloat3("Specular", &lamp.specular[0], "%.3f");
+			if(!ImGui::CollapsingHeader(("Point Light " + std::to_string(i+1)).c_str())) continue;
+			ImGui::ColorEdit3("Ambient", &pointLights[i].ambient[0]);
+			ImGui::InputFloat3("Diffuse", &pointLights[i].diffuse[0]);
+			ImGui::InputFloat3("Specular", &pointLights[i].specular[0]);
 		}
 		if (ImGui::CollapsingHeader("Cube Material"))
 		{
