@@ -13,11 +13,11 @@
 
 struct Material {
 	glm::vec3 ambient;
-	glm::vec3 diffuse;
-	glm::vec3 specular;
+	float diffuse;
+	float specular;
 	float shininess;
 
-	Material() :ambient(1.f), diffuse(1.f), specular(1.f), shininess(1.f) {}
+	Material() :ambient(1.f), diffuse(0.8f), specular(1.f), shininess(1.f) {}
 };
 
 struct PointLight
@@ -25,14 +25,12 @@ struct PointLight
 	glm::vec3 position;
     
 	glm::vec3 ambient;
-	glm::vec3 diffuse;
-	glm::vec3 specular;
     
 	float constant;
 	float linear;
 	float quadratic;
 
-	PointLight():ambient(.05f), diffuse(.8f), specular(1.f){}
+	PointLight():ambient(.05f) {}
 };
 
 struct DirLight
@@ -41,6 +39,22 @@ struct DirLight
 	glm::vec3 ambient;
 	glm::vec3 diffuse;
 	glm::vec3 specular;
+};
+
+struct SpotLight{
+	glm::vec3 position;
+	glm::vec3 direction;
+	float cutOff;
+	float outerCutOff;
+    
+	glm::vec3 ambient;
+    
+	float constant;
+	float linear;
+	float quadratic;
+    
+	bool isOn;
+	SpotLight():isOn(false), cutOff(glm::radians(12.f)), outerCutOff(glm::radians(17.5f)) {}
 };
 
 #define NR_POINT_LIGHTS 4
@@ -61,7 +75,7 @@ private:
 	Material cubeMaterial;
 	DirLight dirLight;
 	std::vector<PointLight> pointLights;
-	PointLight spotLight;
+	SpotLight spotLight;
 
 	glm::vec3 m_clearColor;
 

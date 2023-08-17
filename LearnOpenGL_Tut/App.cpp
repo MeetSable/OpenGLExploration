@@ -148,6 +148,9 @@ App::App(int w, int h)
 		pointLights[i].linear = 0.09f;
 		pointLights[i].quadratic = 0.032f;
 	}
+	spotLight.constant = 1.f;
+	spotLight.linear = 0.09f;
+	spotLight.quadratic = 0.032f;
 
 	m_lastFrame = SDL_GetTicks();
 }
@@ -232,25 +235,34 @@ void App::Draw()
 		cubeShader->SetUniform4mat("view", camera->GetViewMatrix());
 		cubeShader->SetUniform3f("viewPos", camera->GetCameraPos());
 		// lamp properties
-		// cubeShader->SetUniform3f("light.position", lamp.position); // point light
-		// cubeShader->SetUniform3f("light.direction", glm::vec3(-.2f, -1.f, -.3f)); // directional light
+		cubeShader->SetUniform3f("dirLight.direction", dirLight.direction);
+		cubeShader->SetUniform3f("dirLight.ambient", dirLight.ambient);
+		// cubeShader->SetUniform3f("dirLight.diffuse", dirLight.diffuse);
+		// cubeShader->SetUniform3f("dirLight.specular", dirLight.specular);
 		for(int i = 0 ; i < NR_POINT_LIGHTS ; i++)
 		{
 			std::string l = "pointLights[" + std::to_string(i) + "].";
 			cubeShader->SetUniform3f(l + "position", pointLights[i].position);
 			cubeShader->SetUniform3f(l + "ambient", pointLights[i].ambient);
-			cubeShader->SetUniform3f(l + "diffuse", pointLights[i].diffuse);
-			cubeShader->SetUniform3f(l + "specular", pointLights[i].specular);
 			cubeShader->SetUniform1f(l + "constant", pointLights[i].constant);
 			cubeShader->SetUniform1f(l + "linear", pointLights[i].linear);
 			cubeShader->SetUniform1f(l + "quadratic", pointLights[i].quadratic);
 		}
 		// Spotlight -------
-		// cubeShader->SetUniform3f("light.position", camera->GetCameraPos());
-		// cubeShader->SetUniform3f("light.direction", camera->GetCameraFront());
+		cubeShader->SetUniform3f("spotLight.position", camera->GetCameraPos());
+		cubeShader->SetUniform3f("spotLight.direction", camera->GetCameraFront());
+		cubeShader->SetUniform3f("spotLight.ambient", spotLight.ambient);
+		cubeShader->SetUniform1f("spotLight.constant", spotLight.constant);
+		cubeShader->SetUniform1f("spotLight.linear", spotLight.linear);
+		cubeShader->SetUniform1f("spotLight.quadratic", spotLight.quadratic);
+		cubeShader->SetUniform1f("spotLight.cutOff", glm::cos(spotLight.cutOff));
+		cubeShader->SetUniform1f("spotLight.outerCutOff", glm::cos(spotLight.outerCutOff));
+		cubeShader->SetUniform1i("spotLight.isOn", spotLight.isOn);
 		// Spotlight -------
 		// cube material
 		cubeShader->SetUniform1f("material.shininess", cubeMaterial.shininess);
+		cubeShader->SetUniform1f("material.v_diffuse", cubeMaterial.diffuse);
+		cubeShader->SetUniform1f("material.v_specular", cubeMaterial.specular);
 		for(int i = 0 ; i < 10 ; i++)
 		{
 			glm::mat4 model = glm::translate(glm::mat4(1.f), cubePositions[i]);
@@ -287,16 +299,27 @@ void App::Draw()
 		
 		ImGui::Begin("Editor");
 		ImGui::ColorEdit3("Background Color", &m_clearColor[0]);
+		if(ImGui::CollapsingHeader("Directional Light"))
+		{
+			ImGui::ColorEdit3("Ambient", &dirLight.ambient[0]);
+			ImGui::DragFloat3("Direction", &dirLight.direction[0], 1.f, 0.f, 360.f);
+		}
 		for(int i = 0 ; i < NR_POINT_LIGHTS ; i++)
 		{
-			if(!ImGui::CollapsingHeader(("Point Light " + std::to_string(i+1)).c_str())) continue;
-			ImGui::ColorEdit3("Ambient", &pointLights[i].ambient[0]);
-			ImGui::InputFloat3("Diffuse", &pointLights[i].diffuse[0]);
-			ImGui::InputFloat3("Specular", &pointLights[i].specular[0]);
+			ImGui::ColorEdit3(("Ambient Light " + std::to_string(i+1)).c_str(), &pointLights[i].ambient[0]);
+		}
+		if(ImGui::CollapsingHeader("Spot Light"))
+		{
+			ImGui::Checkbox("Turn On", &spotLight.isOn);
+			ImGui::ColorEdit3("Ambient", &spotLight.ambient[0]);
+			ImGui::SliderAngle("Inner Cut Off", &spotLight.cutOff, 0, 90);
+			ImGui::SliderAngle("Outer Cut Off", &spotLight.outerCutOff, 0, 90);
 		}
 		if (ImGui::CollapsingHeader("Cube Material"))
 		{
 			ImGui::SliderFloat("Shininess", &cubeMaterial.shininess, 1.f, 128.f, "%.2f");
+			ImGui::DragFloat("Diffuse", &cubeMaterial.diffuse, 0.01f, 0.f, 1.f, "%.3f");
+			ImGui::DragFloat("Specular", &cubeMaterial.specular, 0.01f, 0.f, 1.f, "%.3f");
 		}
 		ImGui::End();
 		
