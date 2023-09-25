@@ -1,8 +1,8 @@
 #include "Texture.h"
 #include "stb_image/stb_image.h"
 
-Texture::Texture(const std::string& filePath)
-	:m_RendererID(0), m_FilePath(filePath), m_LocalBuffer(nullptr), m_Width(0), m_Height(0), m_BPP(0)
+Texture::Texture(const std::string& filePath, TextureType type)
+	:m_RendererID(0), m_FilePath(filePath), m_LocalBuffer(nullptr), m_Width(0), m_Height(0), m_BPP(0), m_type(type)
 {
 
 	stbi_set_flip_vertically_on_load(1);
@@ -26,8 +26,8 @@ Texture::Texture(const std::string& filePath)
 		stbi_image_free(m_LocalBuffer);
 }
 
-Texture::Texture(unsigned char* textureBuffer, int width, int height, int BPP)
-	:m_Width(width), m_Height(height), m_BPP(BPP), m_RendererID(0)
+Texture::Texture(unsigned char* textureBuffer, int width, int height, int BPP, TextureType type = Diffuse)
+	:m_Width(width), m_Height(height), m_BPP(BPP), m_RendererID(0), m_type(type)
 {
 	GLCall(glGenTextures(1, &m_RendererID));
 	GLCall(glBindTexture(GL_TEXTURE_2D, m_RendererID));
